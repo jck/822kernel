@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+GRUBBY_FILE="/var/log/grubby"
+TMP=$(mktemp)
+
+#  Command "grubby --default-kernel" has a bug/feature that fsyncs
+#  after writting each line to a debug log file, making it slow (several seconds).
+#  Workaround is to write to /dev/null instead.
+if [ -e $GRUBBY_FILE ]
+    then rm -f $GRUBBY_FILE
+fi
+ln -s /dev/null $GRUBBY_FILE
+KERNEL_IMG=$(grubby --default-kernel)
+unlink $GRUBBY_FILE
+
+#  Get the detailed information of the default kernel (as seen by grub)
+#  This will create a temporary file in /tmp
+grubby --info=$KERNEL_IMG | grep -v title > $TMP
+source $TMP
+rm $TMP
+
+#  Simple log to see if this script gets executed
+date --rfc-3339=seconds >> /var/log/kexec
+
+#  Load (prepare) the kernel for execution
+kexec -l $kernel --initrd=$initrd --command-line="root=$root $args"
+systemctl kexec
