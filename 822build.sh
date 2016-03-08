@@ -12,4 +12,7 @@ make bzImage
 make modules
 make modules_install
 make install
-./kexec-reboot
+
+if [ "$1" == "r" ]; then
+  ./kexec-reboot
+fi
