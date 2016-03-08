@@ -10,6 +10,11 @@ fi
 
 make bzImage
 make modules
+
+if [ "$HOSTNAME" == "serenity" ]; then
+  exit
+fi
+
 make modules_install
 make install
 
