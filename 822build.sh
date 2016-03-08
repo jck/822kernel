@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash -vex
 
-export MAKEFLAGS="-j$(nproc)"
+export MAKEFLAGS="-j`nproc`"
 
 if [ ! -f .config ] || ! cmp -s .config config.822; then
   echo "Copying config.822 to .config"
@@ -8,4 +8,8 @@ if [ ! -f .config ] || ! cmp -s .config config.822; then
   make oldconfig
 fi
 
-make bzImage && make modules && make modules_install && make install && ./kexec-reboot
+make bzImage
+make modules
+make modules_install
+make install
+./kexec-reboot
