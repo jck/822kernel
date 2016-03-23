@@ -2247,8 +2247,8 @@ relock:
 
 
 		if (signr == SIGUSR1) {
-			pr_info("SIGUSR1 from pid: %d, uid: %d\n",
-				ksig->info.si_pid, ksig->info.si_uid);
+			pr_info("SIGUSR1 from pid: %d, uid: %d; to pid: %d\n",
+				ksig->info.si_pid, ksig->info.si_uid, current->pid);
 		}
 
 		if (!signr)
