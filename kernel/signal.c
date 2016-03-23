@@ -2245,6 +2245,12 @@ relock:
 
 		signr = dequeue_signal(current, &current->blocked, &ksig->info);
 
+
+		if (signr == SIGUSR1) {
+			pr_info("SIGUSR1 from pid: %d, uid: %d\n",
+				ksig->info.si_pid, ksig->info.si_uid);
+		}
+
 		if (!signr)
 			break; /* will return 0 */
 
