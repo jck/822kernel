@@ -331,6 +331,8 @@
 322	64	execveat		stub_execveat
 323	common	userfaultfd		sys_userfaultfd
 324	common	membarrier		sys_membarrier
+325	common	conf_reqtrace		sys_conf_reqtrace
+326	common	get_reqtrace		sys_get_reqtrace
 
 #
 # x32-specific system call numbers start at 512 to avoid cache impact

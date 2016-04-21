@@ -2616,11 +2616,40 @@ void blk_unprep_request(struct request *req)
 }
 EXPORT_SYMBOL_GPL(blk_unprep_request);
 
+extern struct req_trace_tbl req_trace;
+extern bool req_trace_enabled;
+
+static inline int timespec_sub_ms(struct timespec lhs, struct timespec rhs)
+{
+	struct timespec ts;
+	ts = timespec_sub(lhs, rhs);
+	return ((ts.tv_sec * MSEC_PER_SEC) + (ts.tv_nsec / NSEC_PER_MSEC));
+}
+
 /*
  * queue lock must be held
  */
 void blk_finish_request(struct request *req, int error)
 {
+	struct timespec current_time;
+	struct req_trace_entry entry;
+
+	entry.pid = task_pid_nr(current);
+
+	getnstimeofday(&current_time);
+	entry.serv_time = timespec_sub_ms(current_time, req->serv_start_time);
+	entry.wait_time = timespec_sub_ms(current_time, req->wait_start_time);
+
+	if (req_trace_enabled) {
+		req_trace.data[req_trace.count++] = entry;
+		if (!(req_trace.count % 1000))
+			pr_info("Traced %d requests\n", req_trace.count);
+		if (req_trace.count == 20000) {
+			req_trace_enabled = false;
+			pr_alert("Request trace buffer full\n");
+		}
+	}
+
 	if (req->cmd_flags & REQ_QUEUED)
 		blk_queue_end_tag(req->q, req);
 

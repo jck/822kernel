@@ -196,6 +196,21 @@ struct request {
 
 	/* for bidi */
 	struct request *next_rq;
+
+	pid_t pid;
+	struct timespec serv_start_time;
+	struct timespec wait_start_time;
+};
+
+struct req_trace_entry {
+	int pid;
+	int serv_time;
+	int wait_time;
+};
+
+struct req_trace_tbl {
+	int count;
+	struct req_trace_entry data[20000];
 };
 
 static inline unsigned short req_get_ioprio(struct request *req)

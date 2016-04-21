@@ -128,6 +128,7 @@ static inline struct request *__elv_next_request(struct request_queue *q)
 	while (1) {
 		if (!list_empty(&q->queue_head)) {
 			rq = list_entry_rq(q->queue_head.next);
+			getnstimeofday(&rq->serv_start_time);
 			return rq;
 		}
 
